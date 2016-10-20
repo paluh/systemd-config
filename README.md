@@ -1,2 +1,2 @@
-# systemd-configs
-Utils for systemd configs management
+# systemd-config
+Haskell utils for systemd configs management.

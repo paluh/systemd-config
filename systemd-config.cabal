@@ -30,7 +30,6 @@ library
                      , RankNTypes
                      , GADTs
   exposed-modules:     System.Systemd.Config.Networkd.NetDev
-                     , System.Systemd.Config.Utils
                      , System.Systemd.Config.Utils.Unit
   ghc-options:         -Wall
   hs-source-dirs:      src
