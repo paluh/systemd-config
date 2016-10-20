@@ -1,0 +1,57 @@
+name:                systemd-config
+version:             0.1.0.0
+synopsis:            Systemd configuration helpers
+description:         Please see README.md
+homepage:            https://github.com/githubuser/systemd-config#readme
+license:             BSD3
+license-file:        LICENSE
+author:              Tomasz Rybarczyk
+maintainer:          paluho@gmail.com
+copyright:           2016 Tomasz Rybarczyk
+category:            System
+build-type:          Simple
+cabal-version:       >=1.10
+
+library
+  build-depends:       base >= 4.7 && < 5
+                     , ini
+                     , network-info
+                     , text
+                     , text-show
+                     , unordered-containers
+  default-language:    Haskell2010
+  default-extensions:  OverloadedStrings
+                     , OverloadedLists
+                     , TemplateHaskell
+                     , RecordWildCards
+                     , DeriveDataTypeable
+                     , DeriveGeneric
+                     , ScopedTypeVariables
+                     , RankNTypes
+                     , GADTs
+  exposed-modules:     System.Systemd.Config.Networkd.NetDev
+                     , System.Systemd.Config.Utils
+                     , System.Systemd.Config.Utils.Unit
+  ghc-options:         -Wall
+  hs-source-dirs:      src
+
+test-suite systemd-config-test
+  build-depends:       base
+                     , hspec
+                     , network-info
+                     , systemd-config
+                     , text
+  default-extensions:  OverloadedStrings
+                     , OverloadedLists
+                     , TemplateHaskell
+                     , RecordWildCards
+                     , DeriveDataTypeable
+                     , DeriveGeneric
+                     , ScopedTypeVariables
+                     , RankNTypes
+                     , GADTs
+  default-language:     Haskell2010
+  ghc-options:         -threaded -rtsopts -with-rtsopts=-N -Wall
+  hs-source-dirs:      test
+  main-is:             Spec.hs
+  type:                exitcode-stdio-1.0
