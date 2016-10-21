@@ -15,10 +15,10 @@ cabal-version:       >=1.10
 library
   build-depends:       base >= 4.7 && < 5
                      , ini
-                     , network-info
+                     , ip
+                     , semigroups
                      , text
                      , text-show
-                     , unordered-containers
   default-language:    Haskell2010
   default-extensions:  OverloadedStrings
                      , OverloadedLists
@@ -30,14 +30,15 @@ library
                      , RankNTypes
                      , GADTs
   exposed-modules:     System.Systemd.Config.Networkd.NetDev
-                     , System.Systemd.Config.Utils.Unit
+                     , System.Systemd.Config.Networkd.Network
+                     , System.Systemd.Config.Unit
   ghc-options:         -Wall
   hs-source-dirs:      src
 
 test-suite systemd-config-test
   build-depends:       base
                      , hspec
-                     , network-info
+                     , ip
                      , systemd-config
                      , text
   default-extensions:  OverloadedStrings

@@ -1,12 +1,11 @@
-{-# LANGUAGE RecordWildCards #-}
 module System.Systemd.Config.Networkd.NetDev where
 
-import Data.HashMap.Strict (fromList)
 import Data.Text (toLower, Text, pack)
 import Data.List (sort)
-import Network.Info (MAC)
+import Net.Mac.Text (encode)
+import Net.Types (Mac)
 import TextShow (showt)
-import System.Systemd.Config.Utils.Unit (printUnit, Unit(..))
+import System.Systemd.Config.Unit (printUnit, Unit(Unit))
 
 -- systemd v321
 
@@ -38,7 +37,7 @@ data NetDev = NetDev
   { description :: Maybe Text
   , kind :: Maybe Kind
   , mtuBytes :: Maybe Int
-  , macAddress :: Maybe MAC
+  , macAddress :: Maybe Mac
   , name :: Text
   }
 
@@ -52,7 +51,7 @@ toUnit NetDev {..} =
   config = sort $ ("Name", name) : [(k, v) | (k, Just v) <- vs]
   vs = [ ("Description", description)
        , ("Kind", toLower . pack . show <$> kind)
-       , ("MACAddress", pack . show <$> macAddress)
+       , ("MACAddress", encode <$> macAddress)
        , ("MTUBytes", showt <$> mtuBytes)
        ]
 

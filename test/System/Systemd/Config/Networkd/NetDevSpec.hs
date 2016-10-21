@@ -1,10 +1,10 @@
 module System.Systemd.Config.Networkd.NetDevSpec where
 
-import           System.Systemd.Config.Networkd.NetDev (toConfig, netDev, Kind(Bridge), NetDev(..))
-import           Test.Hspec (describe, it, shouldBe, Spec)
-import           Network.Info (MAC(MAC))
 import           Data.Text (unlines)
+import           Net.Mac (fromOctets)
 import           Prelude hiding (unlines)
+import           Test.Hspec (describe, it, shouldBe, Spec)
+import           System.Systemd.Config.Networkd.NetDev (toConfig, netDev, Kind(Bridge), NetDev(..))
 
 suite :: Spec
 suite =
@@ -18,7 +18,7 @@ suite =
             { description = Just "A free-form description..."
             , kind = Just Bridge
             , mtuBytes = Just 1500
-            , macAddress = Just (MAC 0xf0 0xde 0xf1 0x62 0x90 0x55)
+            , macAddress = Just (fromOctets 0xf0 0xde 0xf1 0x62 0x90 0x55)
             , name = "br0"
             })
         (unlines
