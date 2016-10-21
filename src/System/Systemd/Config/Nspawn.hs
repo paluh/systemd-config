@@ -6,7 +6,6 @@ import System.Systemd.Config.Unit (section, showBool, Unit)
 
 -- systemd v231
 
--- ExecStart=/usr/bin/systemd-nspawn --quiet --keep-unit --boot --link-journal=try-guest  --settings=override -n --machine=%I --network-macvlan="$i"
 data Exec = Exec
   { -- Takes a boolean argument, which defaults to off. If enabled, systemd-nspawn will automatically
     -- search for an init executable and invoke it. In this case, the specified parameters using
