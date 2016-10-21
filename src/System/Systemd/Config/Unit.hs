@@ -26,6 +26,7 @@ printUnit :: Unit -> Text
 printUnit (Unit sections) =
   concat (map buildSection sections)
  where
+  buildSection (_, []) = ""
   buildSection (name, pairs) = "[" <> name <> "]\n" <> concat (map buildPair pairs)
   buildPair (name,value) = name <> "=" <> value <> "\n"
 

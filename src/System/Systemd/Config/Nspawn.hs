@@ -2,7 +2,10 @@ module System.Systemd.Config.Nspawn where
 
 import Data.Monoid ((<>))
 import Data.Text (Text)
-import System.Systemd.Config.Unit (section, showBool, Unit)
+import Data.Text.IO (writeFile)
+import Path (Abs, Dir, File, fromAbsFile, mkAbsDir, Path, Rel, (</>))
+import Prelude hiding (writeFile)
+import System.Systemd.Config.Unit (printUnit, section, showBool, Unit)
 
 -- systemd v231
 
@@ -15,6 +18,9 @@ data Exec = Exec
     -- used.
     execBoot :: Maybe Bool
   }
+
+emptyExec :: Exec
+emptyExec = Exec Nothing
 
 execSection :: Exec -> Unit
 execSection Exec {..} =
@@ -45,6 +51,9 @@ data Network = Network
   , networkMACVLAN :: [Text]
   }
 
+emptyNetwork :: Network
+emptyNetwork = Network Nothing [] [] []
+
 networkSection :: Network -> Unit
 networkSection Network {..} =
   section "Network" options
@@ -55,10 +64,22 @@ networkSection Network {..} =
     map (\i -> ("IPVLAN", Just i)) networkIPVLAN <>
     map (\m -> ("MACVLAN", Just m)) networkMACVLAN
 
-data NspawnConfig = NspawnConfig
+data Nspawn = Nspawn
   { exec :: Exec
   , network :: Network
   }
 
-toUnit :: NspawnConfig -> Unit
-toUnit NspawnConfig {..} = execSection exec <> networkSection network
+toUnit :: Nspawn -> Unit
+toUnit Nspawn {..} = execSection exec <> networkSection network
+
+type MachinesDir = Path Abs Dir
+type MachineName = Path Rel File
+
+writeNspawn :: MachineName -> MachinesDir -> Nspawn -> IO ()
+writeNspawn machineName machinesDir nspawn =
+  writeFile (fromAbsFile $ machinesDir </> machineName) config
+ where
+  config = printUnit . toUnit $ nspawn
+
+writeNspawn' :: MachineName -> Nspawn -> IO ()
+writeNspawn' machineName  = writeNspawn machineName $(mkAbsDir "/var/lib/machines")
