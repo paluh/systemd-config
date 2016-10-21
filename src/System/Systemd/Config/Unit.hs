@@ -1,8 +1,7 @@
 module System.Systemd.Config.Unit where
 
+import Data.Monoid (mempty, Monoid, (<>))
 import Data.Text (concat, Text)
-import Data.Semigroup (Semigroup, (<>))
-import Data.Semigroup.Generic (gmappend)
 import Prelude hiding (concat)
 import GHC.Generics (Generic(..))
 
@@ -13,8 +12,15 @@ type Value = Text
 newtype Unit = Unit [(Section, [(Key, Value)])]
   deriving (Generic)
 
-instance Semigroup Unit where
-  (<>) = gmappend
+instance Monoid Unit where
+  mempty = Unit mempty
+  mappend (Unit u1) (Unit u2) = Unit (u1 <> u2)
+
+section :: Text -> [(Text, Maybe Text)] -> Unit
+section header values =
+  Unit [(header, values')]
+ where
+  values' = [(k, v) | (k, Just v) <- values]
 
 printUnit :: Unit -> Text
 printUnit (Unit sections) =
@@ -57,30 +63,30 @@ data Architecture
   | Cris
 
 showArchitecture :: Architecture -> Text
-showArchitecture X86        = "x86"
-showArchitecture X86_64     = "x86-64"
-showArchitecture Ppc        = "ppc"
-showArchitecture Ppc_le     = "ppc-le"
-showArchitecture Ppc64      = "ppc64"
-showArchitecture Ppc64_le   = "ppc64-le"
-showArchitecture Ia64       = "ia64"
-showArchitecture Parisc     = "parisc"
-showArchitecture Parisc64   = "parisc64"
-showArchitecture S390       = "s390"
-showArchitecture S390x      = "s390x"
-showArchitecture Sparc      = "sparc"
-showArchitecture Sparc64    = "sparc64"
-showArchitecture Mips       = "mips"
-showArchitecture Mips_le    = "mips-le"
-showArchitecture Mips64     = "mips64"
-showArchitecture Mips64_le  = "mips64-le"
-showArchitecture Alpha      = "alpha"
-showArchitecture Arm        = "arm"
-showArchitecture Arm_be     = "arm-be"
-showArchitecture Arm64      = "arm64"
-showArchitecture Arm64_be   = "arm64-be"
-showArchitecture Sh         = "sh"
-showArchitecture Sh64       = "sh64"
-showArchitecture M86k       = "m86k"
-showArchitecture Tilegx     = "tilegx"
-showArchitecture Cris       = "cris"
+showArchitecture X86 = "x86"
+showArchitecture X86_64 = "x86-64"
+showArchitecture Ppc = "ppc"
+showArchitecture Ppc_le = "ppc-le"
+showArchitecture Ppc64 = "ppc64"
+showArchitecture Ppc64_le = "ppc64-le"
+showArchitecture Ia64 = "ia64"
+showArchitecture Parisc = "parisc"
+showArchitecture Parisc64 = "parisc64"
+showArchitecture S390 = "s390"
+showArchitecture S390x = "s390x"
+showArchitecture Sparc = "sparc"
+showArchitecture Sparc64 = "sparc64"
+showArchitecture Mips = "mips"
+showArchitecture Mips_le = "mips-le"
+showArchitecture Mips64 = "mips64"
+showArchitecture Mips64_le = "mips64-le"
+showArchitecture Alpha = "alpha"
+showArchitecture Arm = "arm"
+showArchitecture Arm_be = "arm-be"
+showArchitecture Arm64 = "arm64"
+showArchitecture Arm64_be = "arm64-be"
+showArchitecture Sh = "sh"
+showArchitecture Sh64 = "sh64"
+showArchitecture M86k = "m86k"
+showArchitecture Tilegx = "tilegx"
+showArchitecture Cris = "cris"

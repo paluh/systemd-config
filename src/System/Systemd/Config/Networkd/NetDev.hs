@@ -5,7 +5,7 @@ import Data.List (sort)
 import Net.Mac.Text (encode)
 import Net.Types (Mac)
 import TextShow (showt)
-import System.Systemd.Config.Unit (printUnit, Unit(Unit))
+import System.Systemd.Config.Unit (Unit(Unit))
 
 -- systemd v321
 
@@ -54,6 +54,3 @@ toUnit NetDev {..} =
        , ("MACAddress", encode <$> macAddress)
        , ("MTUBytes", showt <$> mtuBytes)
        ]
-
-toConfig :: NetDev -> Text
-toConfig = printUnit . toUnit

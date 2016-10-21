@@ -4,16 +4,17 @@ import           Data.Text (unlines)
 import           Net.Mac (fromOctets)
 import           Prelude hiding (unlines)
 import           Test.Hspec (describe, it, shouldBe, Spec)
-import           System.Systemd.Config.Networkd.NetDev (toConfig, netDev, Kind(Bridge), NetDev(..))
+import           System.Systemd.Config.Networkd.NetDev (toUnit, netDev, Kind(Bridge), NetDev(..))
+import           System.Systemd.Config.Unit (printUnit)
 
 suite :: Spec
 suite =
   describe "System.Systemd.Config.Networkd.NetDev" $ do
     it "generates correct unit for empty config" $
-      toConfig (netDev "br0") `shouldBe` "[NetDev]\nName=br0\n"
+      (printUnit . toUnit $ netDev "br0") `shouldBe` "[NetDev]\nName=br0\n"
     it "generates correct unit for fully customized config" $
       shouldBe
-        (toConfig
+        (printUnit . toUnit $
           NetDev
             { description = Just "A free-form description..."
             , kind = Just Bridge
