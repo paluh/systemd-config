@@ -49,35 +49,35 @@ Simple haskell helper for systemd configs generation. Currently it is quite verb
 
 This will generate:
 
-    * /etc/systemd/network/br01.netdev
+* /etc/systemd/network/br01.netdev
 
-        ```ini
-        [NetDev]
-        Kind=bridge
-        Name=br01
-        ```
+    ```ini
+    [NetDev]
+    Kind=bridge
+    Name=br01
+    ```
 
-    * /etc/systemd/network/br01.network
+* /etc/systemd/network/br01.network
 
-        ```ini
-        [Match]
-        Name=br01
+    ```ini
+    [Match]
+    Name=br01
 
-        [Network]
-        Address=10.0.0.0/24
-        Bridge=br01
-        Gateway=10.0.0.1
-        ```
+    [Network]
+    Address=10.0.0.0/24
+    Bridge=br01
+    Gateway=10.0.0.1
+    ```
 
-    * /var/lib/machines/my-new-machine.nspawn
+* /var/lib/machines/my-new-machine.nspawn
 
-        ```ini
-        [Exec]
-        Boot=yes
+    ```ini
+    [Exec]
+    Boot=yes
 
-        [Network]
-        Bridge=br01
-        ```
+    [Network]
+    Bridge=br01
+    ```
 
 ## Limitations
 I'm implementing only those parts of systemd configuration which I currently need. If you need antyhing more, pull requests are really welcome.

@@ -61,3 +61,28 @@ test-suite systemd-config-test
   hs-source-dirs:      test
   main-is:             Spec.hs
   type:                exitcode-stdio-1.0
+
+executable systemd-config
+  build-depends:       base >= 4.7 && < 5
+                     , generic-deriving
+                     , ip
+                     , path
+                     , semigroups
+                     , text
+                     , text-show
+  default-language:    Haskell2010
+  default-extensions:  DeriveAnyClass
+                     , DeriveDataTypeable
+                     , DeriveGeneric
+                     , GADTs
+                     , OverloadedLists
+                     , OverloadedStrings
+                     , PatternSynonyms
+                     , RankNTypes
+                     , RecordWildCards
+                     , ScopedTypeVariables
+                     , TemplateHaskell
+  ghc-options:         -Wall
+  hs-source-dirs:      src
+  main-is:             Main.hs
+
