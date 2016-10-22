@@ -1,5 +1,3 @@
-{-# LANGUAGE DeriveAnyClass #-}
-{-# LANGUAGE PatternSynonyms #-}
 module System.Systemd.Config.Networkd.Network where
 
 import Data.Monoid ((<>), Last)
@@ -14,7 +12,7 @@ import qualified Net.IPv4.Range.Text as IPv4.Range.Text
 import Net.Types (Mac, IPv4, IPv4Range)
 import Path (Abs, Dir, File, fromAbsFile, mkAbsDir, Path, (</>), parseRelFile)
 import Prelude hiding (writeFile)
-import System.Systemd.Config.Unit (Architecture, showArchitecture, showBool, Unit, section, printUnit, pattern Value)
+import System.Systemd.Config.Unit (showBool, Unit, section, printUnit, pattern Value)
 
 data Match = Match
   { matchArchitecture :: Last Architecture
@@ -115,3 +113,62 @@ writeNetwork networkName networkDir net = do
 
 writeNetwork' :: NetworkName -> NetworkConfig -> IO (Path Abs File)
 writeNetwork' name = writeNetwork name $(mkAbsDir "/etc/systemd/network/")
+
+data Architecture
+  = X86
+  | X86_64
+  | Ppc
+  | Ppc_le
+  | Ppc64
+  | Ppc64_le
+  | Ia64
+  | Parisc
+  | Parisc64
+  | S390
+  | S390x
+  | Sparc
+  | Sparc64
+  | Mips
+  | Mips_le
+  | Mips64
+  | Mips64_le
+  | Alpha
+  | Arm
+  | Arm_be
+  | Arm64
+  | Arm64_be
+  | Sh
+  | Sh64
+  | M86k
+  | Tilegx
+  | Cris
+  deriving (Generic, Show)
+
+showArchitecture :: Architecture -> Text
+showArchitecture X86 = "x86"
+showArchitecture X86_64 = "x86-64"
+showArchitecture Ppc = "ppc"
+showArchitecture Ppc_le = "ppc-le"
+showArchitecture Ppc64 = "ppc64"
+showArchitecture Ppc64_le = "ppc64-le"
+showArchitecture Ia64 = "ia64"
+showArchitecture Parisc = "parisc"
+showArchitecture Parisc64 = "parisc64"
+showArchitecture S390 = "s390"
+showArchitecture S390x = "s390x"
+showArchitecture Sparc = "sparc"
+showArchitecture Sparc64 = "sparc64"
+showArchitecture Mips = "mips"
+showArchitecture Mips_le = "mips-le"
+showArchitecture Mips64 = "mips64"
+showArchitecture Mips64_le = "mips64-le"
+showArchitecture Alpha = "alpha"
+showArchitecture Arm = "arm"
+showArchitecture Arm_be = "arm-be"
+showArchitecture Arm64 = "arm64"
+showArchitecture Arm64_be = "arm64-be"
+showArchitecture Sh = "sh"
+showArchitecture Sh64 = "sh64"
+showArchitecture M86k = "m86k"
+showArchitecture Tilegx = "tilegx"
+showArchitecture Cris = "cris"

@@ -1,4 +1,3 @@
-{-# LANGUAGE PatternSynonyms #-}
 module System.Systemd.Config.Unit where
 
 import Data.Monoid (mempty, Last(Last), Monoid, (<>))
