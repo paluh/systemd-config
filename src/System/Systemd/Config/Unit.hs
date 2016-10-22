@@ -2,7 +2,7 @@
 module System.Systemd.Config.Unit where
 
 import Data.Monoid (mempty, Last(Last), Monoid, (<>))
-import Data.Text (concat, Text)
+import Data.Text (concat, intercalate, Text)
 import Prelude hiding (concat)
 import GHC.Generics (Generic(..))
 
@@ -31,7 +31,7 @@ section header values =
 
 printUnit :: Unit -> Text
 printUnit (Unit sections) =
-  concat (map buildSection sections)
+  intercalate "\n" (map buildSection sections)
  where
   buildSection (_, []) = ""
   buildSection (name, pairs) = "[" <> name <> "]\n" <> concat (map buildPair pairs)
