@@ -1,51 +1,51 @@
 # systemd-config
 Simple haskell helper for systemd configs generation. Currently it is quite verbose:
 
-    ```haskell
-    module Main where
+```haskell
+module Main where
 
-    import Net.Types (IPv4Range(IPv4Range))
-    import Net.IPv4 (fromOctets)
-    import System.Systemd.Config.Unit (pattern Value)
-    import System.Systemd.Config.Networkd.NetDev (Device(BridgeDevice), netDev, writeNetDev')
-    import System.Systemd.Config.Networkd.Network (NetworkConfig(match, network),
-                                                   Network(networkAddress, networkBridge, networkGateway),
-                                                   Match(matchName), writeNetwork')
-    import qualified System.Systemd.Config.Nspawn as Nspawn
+import Net.Types (IPv4Range(IPv4Range))
+import Net.IPv4 (fromOctets)
+import System.Systemd.Config.Unit (pattern Value)
+import System.Systemd.Config.Networkd.NetDev (Device(BridgeDevice), netDev, writeNetDev')
+import System.Systemd.Config.Networkd.Network (NetworkConfig(match, network),
+                                               Network(networkAddress, networkBridge, networkGateway),
+                                               Match(matchName), writeNetwork')
+import qualified System.Systemd.Config.Nspawn as Nspawn
 
-    main :: IO ()
-    main = do
-      let
-        bridge = "br01"
+main :: IO ()
+main = do
+  let
+    bridge = "br01"
 
-      -- writes config to /etc/systemd/network
-      -- you can use writeNetDev if you want
-      -- to change location
-      writeNetDev'
-        (netDev bridge (BridgeDevice mempty))
+  -- writes config to /etc/systemd/network
+  -- you can use writeNetDev if you want
+  -- to change location
+  writeNetDev'
+    (netDev bridge (BridgeDevice mempty))
 
-      let
-        network = mempty
-          { networkAddress = Value (IPv4Range (fromOctets 10 0 0 0) 24)
-          , networkBridge = Value bridge
-          , networkGateway = Value (fromOctets 10 0 0 1)
-          }
-        match = mempty { matchName = Value bridge }
+  let
+    network = mempty
+      { networkAddress = Value (IPv4Range (fromOctets 10 0 0 0) 24)
+      , networkBridge = Value bridge
+      , networkGateway = Value (fromOctets 10 0 0 1)
+      }
+    match = mempty { matchName = Value bridge }
 
-      writeNetwork'
-        bridge
-        mempty { network = network }
+  writeNetwork'
+    bridge
+    mempty { network = network }
 
-      Nspawn.writeNspawn'
-        "my-new-machine"
-        (mempty
-          { Nspawn.network = mempty { Nspawn.networkBridge = Value bridge }
-          , Nspawn.exec = mempty { Nspawn.execBoot = Value True }
-          }
-        )
+  Nspawn.writeNspawn'
+    "my-new-machine"
+    (mempty
+      { Nspawn.network = mempty { Nspawn.networkBridge = Value bridge }
+      , Nspawn.exec = mempty { Nspawn.execBoot = Value True }
+      }
+    )
 
-      return ()
-    ```
+  return ()
+```
 
 This will generate:
 
