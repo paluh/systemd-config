@@ -1,5 +1,5 @@
 # systemd-config
-Haskell utils for systemd configs generator. Currently it is quite verbose:
+Simple haskell helper for systemd configs generation. Currently it is quite verbose:
 
   ```haskell
     module Main where
@@ -51,15 +51,15 @@ This will generate:
 
     * /etc/systemd/network/br01.netdev
 
-    ```ini
+        ```ini
         [NetDev]
         Kind=bridge
         Name=br01
-    ```
+        ```
 
     * /etc/systemd/network/br01.network
 
-    ```ini
+        ```ini
         [Match]
         Name=br01
 
@@ -67,16 +67,17 @@ This will generate:
         Address=10.0.0.0/24
         Bridge=br01
         Gateway=10.0.0.1
-    ```
+        ```
 
     * /var/lib/machines/my-new-machine.nspawn
-    ```ini
+
+        ```ini
         [Exec]
         Boot=yes
 
         [Network]
         Bridge=br01
-    ```
+        ```
 
 ## Limitations
 I'm implementing only those parts of systemd configuration which I currently need. If you need antyhing more, pull requests are really welcome.
