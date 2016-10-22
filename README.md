@@ -17,6 +17,7 @@ main :: IO ()
 main = do
   let
     bridge = "br01"
+    interface = "enp0s25"
 
   -- writes config to /etc/systemd/network
   -- you can use writeNetDev if you want
@@ -30,7 +31,7 @@ main = do
       , networkBridge = Value bridge
       , networkGateway = Value (fromOctets 10 0 0 1)
       }
-    match = mempty { matchName = Value bridge }
+    match = mempty { matchName = Value interface }
 
   writeNetwork'
     bridge
@@ -61,7 +62,7 @@ This will generate:
 
     ```ini
     [Match]
-    Name=br01
+    Name=enp0s25
 
     [Network]
     Address=10.0.0.0/24
