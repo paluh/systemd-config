@@ -1,19 +1,22 @@
 module System.Systemd.Config.Networkd.NetDev where
 
-import Data.Monoid ((<>))
+import Data.Monoid ((<>), Last)
+import qualified Data.Semigroup as Semigroup
 import Data.Text (Text, pack, unpack)
 import Data.Text.IO (writeFile)
+import GHC.Generics (Generic)
+import Generics.Deriving.Monoid (GMonoid, gmempty, gmappend)
 import Net.Mac.Text (encode)
 import Net.Types (Mac)
 import Path (Abs, Dir, fromAbsFile, mkAbsDir, Path, (</>), parseRelFile)
 import Prelude hiding (writeFile)
 import TextShow (showt)
-import System.Systemd.Config.Unit (printUnit, section, showBool, Unit)
+import System.Systemd.Config.Unit (printUnit, section, showBool, Unit, pattern Missing, pattern Value)
 
 -- systemd v321
 
-data Kind
-  = BridgeKind Bridge
+data Device
+  = BridgeDevice Bridge
   -- Bond
   -- | Dummy
   -- | Gre
@@ -37,35 +40,37 @@ data Kind
   deriving (Show)
 
 data NetDev = NetDev
-  { netDevDescription :: Maybe Text
-  , netDevKind :: Kind
-  , netDevMtuBytes :: Maybe Int
-  , netDevMacAddress :: Maybe Mac
+  { netDevDescription :: Last Text
+    -- XXX: this is incorrect
+    -- we should keep track of all sums of
+    -- defined devices and put here
+    -- last used kind
+  , netDevKind :: Device
+  , netDevMtuBytes :: Last Int
+  , netDevMacAddress :: Last Mac
   , netDevName :: Text
   }
 
-netDev :: Text -> Kind -> NetDev
-netDev name kind = NetDev Nothing kind Nothing Nothing name
+netDev :: Text -> Device -> NetDev
+netDev name kind = NetDev Missing kind Missing Missing name
 
 data Bridge = Bridge
-  { bridgeAgeingTimeSec :: Maybe Int
-  , bridgeDefaultPVID :: Maybe Text
-  , bridgeForwardDelaySec :: Maybe Int
-  , bridgeHelloTimeSec :: Maybe Int
-  , bridgeMaxAgeSec :: Maybe Int
-  , bridgeMulticastQuerier :: Maybe Bool
-  , bridgeMulticastSnooping :: Maybe Bool
-  , bridgePriority :: Maybe Int
-  , bridgeSTP :: Maybe Bool
-  , bridgeVLANFiltering :: Maybe Bool
+  { bridgeAgeingTimeSec :: Last Int
+  , bridgeDefaultPVID :: Last Text
+  , bridgeForwardDelaySec :: Last Int
+  , bridgeHelloTimeSec :: Last Int
+  , bridgeMaxAgeSec :: Last Int
+  , bridgeMulticastQuerier :: Last Bool
+  , bridgeMulticastSnooping :: Last Bool
+  , bridgePriority :: Last Int
+  , bridgeSTP :: Last Bool
+  , bridgeVLANFiltering :: Last Bool
   }
-  deriving (Show)
+  deriving (Generic, GMonoid, Show)
 
-emptyBridge :: Bridge
-emptyBridge =
-  Bridge
-    Nothing Nothing Nothing Nothing Nothing
-    Nothing Nothing Nothing Nothing Nothing
+instance Monoid Bridge where
+  mempty = gmempty
+  mappend = gmappend
 
 bridgeSection :: Bridge -> Unit
 bridgeSection Bridge {..} =
@@ -90,13 +95,13 @@ toUnit NetDev {..} =
  where
   config =
     [ ("Description", netDevDescription)
-    , ("Kind", Just . pack . encodeKind $ netDevKind)
+    , ("Kind", Value . pack . encodeKind $ netDevKind)
     , ("MACAddress", encode <$> netDevMacAddress)
     , ("MTUBytes", showt <$> netDevMtuBytes)
-    , ("Name", Just netDevName)
+    , ("Name", Value netDevName)
     ]
-  encodeKind (BridgeKind _) = "bridge"
-  kindSection (BridgeKind bridge) = bridgeSection bridge
+  encodeKind (BridgeDevice _) = "bridge"
+  kindSection (BridgeDevice bridge) = bridgeSection bridge
 
 type NetworkDir = Path Abs Dir
 

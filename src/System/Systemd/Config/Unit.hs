@@ -1,6 +1,7 @@
+{-# LANGUAGE PatternSynonyms #-}
 module System.Systemd.Config.Unit where
 
-import Data.Monoid (mempty, Monoid, (<>))
+import Data.Monoid (mempty, Last(Last), Monoid, (<>))
 import Data.Text (concat, Text)
 import Prelude hiding (concat)
 import GHC.Generics (Generic(..))
@@ -16,11 +17,17 @@ instance Monoid Unit where
   mempty = Unit mempty
   mappend (Unit u1) (Unit u2) = Unit (u1 <> u2)
 
-section :: Text -> [(Text, Maybe Text)] -> Unit
+-- shorthand to handle optional value and derive
+-- Monoid instances (which takes last defined value
+-- from sum) for configuration data types
+pattern Value opt = Last (Just opt)
+pattern Missing = Last Nothing
+
+section :: Text -> [(Text, Last Text)] -> Unit
 section header values =
   Unit [(header, values')]
  where
-  values' = [(k, v) | (k, Just v) <- values]
+  values' = [(k, v) | (k, Value v) <- values]
 
 printUnit :: Unit -> Text
 printUnit (Unit sections) =
@@ -62,6 +69,7 @@ data Architecture
   | M86k
   | Tilegx
   | Cris
+  deriving (Generic, Show)
 
 showArchitecture :: Architecture -> Text
 showArchitecture X86 = "x86"

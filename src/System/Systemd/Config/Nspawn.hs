@@ -1,20 +1,23 @@
 module System.Systemd.Config.Nspawn where
 
-import Data.Monoid ((<>))
+import Data.Monoid ((<>), Last)
 import Data.Text (Text, unpack)
 import Data.Text.IO (writeFile)
+import GHC.Generics (Generic)
+import Generics.Deriving.Monoid (GMonoid, gmempty, gmappend)
 import Path (Abs, Dir, fromAbsFile, mkAbsDir, Path, (</>), parseRelFile)
 import Prelude hiding (writeFile)
-import System.Systemd.Config.Unit (printUnit, section, showBool, Unit)
+import System.Systemd.Config.Unit (printUnit, section, showBool, Unit, pattern Value)
 
--- systemd v231
 
 data Exec = Exec
-  { execBoot :: Maybe Bool
+  { execBoot :: Last Bool
   }
+  deriving (Generic, GMonoid, Show)
 
-emptyExec :: Exec
-emptyExec = Exec Nothing
+instance Monoid Exec where
+  mempty = gmempty
+  mappend = gmappend
 
 execSection :: Exec -> Unit
 execSection Exec {..} =
@@ -23,14 +26,16 @@ execSection Exec {..} =
   options = [("Boot", showBool <$> execBoot)]
 
 data Network = Network
-  { networkBridge :: Maybe Text
+  { networkBridge :: Last Text
   , networkInterface :: [Text]
   , networkIPVLAN :: [Text]
   , networkMACVLAN :: [Text]
   }
+  deriving (Generic, GMonoid, Show)
 
-emptyNetwork :: Network
-emptyNetwork = Network Nothing [] [] []
+instance Monoid Network where
+  mempty = gmempty
+  mappend = gmappend
 
 networkSection :: Network -> Unit
 networkSection Network {..} =
@@ -38,14 +43,19 @@ networkSection Network {..} =
  where
   options =
     [("Bridge", networkBridge)] <>
-    map (\i -> ("Interface", Just i)) networkInterface <>
-    map (\i -> ("IPVLAN", Just i)) networkIPVLAN <>
-    map (\m -> ("MACVLAN", Just m)) networkMACVLAN
+    map (\i -> ("Interface", Value i)) networkInterface <>
+    map (\i -> ("IPVLAN", Value i)) networkIPVLAN <>
+    map (\m -> ("MACVLAN", Value m)) networkMACVLAN
 
 data Nspawn = Nspawn
   { exec :: Exec
   , network :: Network
   }
+  deriving (Generic, GMonoid, Show)
+
+instance Monoid Nspawn where
+  mempty = gmempty
+  mappend = gmappend
 
 toUnit :: Nspawn -> Unit
 toUnit Nspawn {..} = execSection exec <> networkSection network
