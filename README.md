@@ -1,7 +1,7 @@
 # systemd-config
 Simple haskell helper for systemd configs generation. Currently it is quite verbose:
 
-  ```haskell
+    ```haskell
     module Main where
 
     import Net.Types (IPv4Range(IPv4Range))
