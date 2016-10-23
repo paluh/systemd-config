@@ -1,4 +1,4 @@
-module System.Systemd.Config.Nspawn where
+module System.Systemd.Config.Nspawn.Unit where
 
 import Data.Monoid ((<>), Last)
 import Data.Text (Text, unpack)
@@ -71,4 +71,4 @@ writeNspawn machineName machinesDir nspawn = do
   config = printUnit . toUnit $ nspawn
 
 writeNspawn' :: MachineName -> Nspawn -> IO ()
-writeNspawn' machineName  = writeNspawn machineName $(mkAbsDir "/var/lib/machines")
+writeNspawn' machineName  = writeNspawn machineName $(mkAbsDir "/etc/systemd/machines")

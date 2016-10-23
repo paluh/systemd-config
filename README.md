@@ -11,7 +11,7 @@ import System.Systemd.Config.Networkd.NetDev (Device(BridgeDevice), netDev, writ
 import System.Systemd.Config.Networkd.Network (NetworkConfig(match, network),
                                                Network(networkAddress, networkBridge, networkGateway),
                                                Match(matchName), writeNetwork')
-import qualified System.Systemd.Config.Nspawn as Nspawn
+import qualified System.Systemd.Config.Nspawn.Unit as Nspawn
 
 main :: IO ()
 main = do
@@ -70,7 +70,7 @@ This will generate:
     Gateway=10.0.0.1
     ```
 
-* /var/lib/machines/my-new-machine.nspawn
+* /etc/systemd/nspawn/my-new-machine.nspawn
 
     ```ini
     [Exec]
