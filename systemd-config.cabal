@@ -34,7 +34,7 @@ library
                      , TemplateHaskell
   exposed-modules:     System.Systemd.Config.Networkd.NetDev
                      , System.Systemd.Config.Networkd.Network
-                     , System.Systemd.Config.Nspawn
+                     , System.Systemd.Config.Nspawn.Unit
                      , System.Systemd.Config.Unit
   ghc-options:         -Wall
   hs-source-dirs:      src
