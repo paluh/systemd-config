@@ -15,7 +15,6 @@ type NspawnExecutable = Path Abs File
 nspawnExecutable :: NspawnExecutable
 nspawnExecutable = $(mkAbsFile "/usr/bin/systemd-nspawn")
 
-
 -- | --as-pid2 or --boot
 data Nspawn
   -- run init stub just to execute given command
@@ -25,26 +24,31 @@ data Nspawn
   -- use command as an init process
   | Init NspawnExecutable Options (NonEmpty InitOption)
 
+
+data Switch = SwitchMissing | SwitchPresent
+pattern Value a = Just a
+pattern Missing = Nothing
+
 emptyOptions :: Machine -> Options
 emptyOptions machine =
   Options
-    { chdir = Nothing
-    , keepUnit = Missing
-    , linkJournal = Nothing
+    { chdir = Missing
+    , keepUnit = SwitchMissing
+    , linkJournal = Missing
     , machine = machine
     , networkBridge = []
     , networkIPVLAN = []
     , networkInterface = []
     , networkMACVLAN = []
-    , networkVeth = Missing
-    , quiet = Missing
-    , privateNetwork = Missing
-    , privateUsers = Nothing
-    , privateUsersChown = Missing
-    , register = Nothing
+    , networkVeth = SwitchMissing
+    , quiet = SwitchMissing
+    , privateNetwork = SwitchMissing
+    , privateUsers = Missing
+    , privateUsersChown = SwitchMissing
+    , register = Missing
     , setEnv = []
-    , settings = Nothing
-    , user = Nothing
+    , settings = Missing
+    , user = Missing
     }
 
 asPid2 :: Machine -> NonEmpty Text -> Nspawn
@@ -97,8 +101,6 @@ data PriveteUsers
   -- private-users=pick
   | PrivateUsersPick
 
-data Switch = Missing | Present
-
 data Options = Options
   { chdir :: Maybe (Path Abs Dir)
   , keepUnit :: Switch
@@ -138,8 +140,8 @@ encodeOptions opts =
 data CommandLine = CommandLine Command [CommandOption] [InitOption]
 
 switch :: Key -> Switch -> [CommandOption] -> [CommandOption]
-switch key Present opts = Switch key : opts
-switch _ Missing opts = opts
+switch key SwitchPresent opts = Switch key : opts
+switch _ SwitchMissing opts = opts
 
 option :: Key -> Value -> [CommandOption] -> [CommandOption]
 option key value opts = Option key value : opts
@@ -190,7 +192,7 @@ optionsAsCommandLine Options {..} =
     option "machine" m . persistencyModeOpts p
 
   persistencyModeOpts (Persistent mt) = opt' option "template" (fromAbsDirT <$> mt)
-  persistencyModeOpts Ephemeral = switch "ephemeral" Present
+  persistencyModeOpts Ephemeral = switch "ephemeral" SwitchPresent
 
   yesNo :: Bool -> Text
   yesNo True = "yes"
@@ -219,9 +221,9 @@ optionsAsCommandLine Options {..} =
 
 toCommandLine :: Nspawn -> CommandLine
 toCommandLine (AsPid2 nspawnExec options command) =
-  CommandLine (fromAbsFileT nspawnExec) (switch "as-pid2" Present . optionsAsCommandLine options $ []) (toList command)
+  CommandLine (fromAbsFileT nspawnExec) (switch "as-pid2" SwitchPresent . optionsAsCommandLine options $ []) (toList command)
 toCommandLine (Boot nspawnExec options initOpts) =
-  CommandLine (fromAbsFileT nspawnExec) (switch "boot" Present . optionsAsCommandLine options $ []) initOpts
+  CommandLine (fromAbsFileT nspawnExec) (switch "boot" SwitchPresent . optionsAsCommandLine options $ []) initOpts
 toCommandLine (Init nspawnExec options command) =
   CommandLine (fromAbsFileT nspawnExec) (optionsAsCommandLine options $ []) (toList command)
 
